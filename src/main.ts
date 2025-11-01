@@ -2,25 +2,27 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
+import * as dotenv from "dotenv";
 
+dotenv.config()
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  const RMQ_URL = configService.get<string>('RABBITMQ_URL');
+  const RABBITMQ_URL = configService.get<string>('RABBITMQ_URL');
 
-  if (!RMQ_URL) {
-    throw new Error('RMQ_URL is not defined');
+  if (!RABBITMQ_URL) {
+    throw new Error('RABBITMQ_URL is not defined');
   }
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: [RMQ_URL],
+      urls: [RABBITMQ_URL],
       queue: 'product_queue',
       queueOptions: {
         durable: false,
       },
-    },
+    }, 
   });
 
   await app.startAllMicroservices();

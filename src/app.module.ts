@@ -6,9 +6,7 @@ import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from './redis/redis.module';
 import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
-import * as dotenv from "dotenv";
 
-dotenv.config()
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),

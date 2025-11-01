@@ -7,12 +7,8 @@ import { RedisModule } from 'src/redis/redis.module';
 import { RabbitMQModule } from 'src/rabbitmq/rabbitmq.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Product]),
-    RedisModule,
-    RabbitMQModule
-  ],
+  imports: [TypeOrmModule.forFeature([Product]), RedisModule, RabbitMQModule],
   controllers: [ProductsController],
-  providers: [ProductsService]
+  providers: [ProductsService],
 })
 export class ProductsModule {}

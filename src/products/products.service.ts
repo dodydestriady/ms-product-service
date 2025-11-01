@@ -48,4 +48,26 @@ export class ProductsService {
 
     return product;
   }
+
+  async decreaseStock(productId: string, quantity: number): Promise<void> {
+    const product = await this.productRepository.findOneBy({ id: productId });
+
+    if (!product) {
+      console.error(`Product with ID ${productId} not found!`);
+      throw new Error(`Product with ID ${productId} not found!`);
+    }
+
+    if (product.qty < quantity) {
+      console.error(`Insufficient stock for product ${productId}.`);
+      throw new Error(`Insufficient stock for product ${productId}.`);
+    }
+
+    product.qty -= quantity;
+    await this.productRepository.save(product);
+
+    await this.redisClient.del(`product:${productId}`);
+    console.log(
+      `Stock updated for product ${productId}. New stock: ${product.qty}`,
+    );
+  }
 }
