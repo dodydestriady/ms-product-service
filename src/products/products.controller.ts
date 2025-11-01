@@ -10,6 +10,8 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entities/product.entity';
 import { EventPattern, Payload } from '@nestjs/microservices';
+import { plainToInstance } from 'class-transformer';
+import { ProductResponseDto } from './dto/product-response.dto';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -27,7 +29,7 @@ export class ProductsController {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
 
-    return product;
+    return plainToInstance(ProductResponseDto, product, { excludeExtraneousValues: false });
   }
 
   @EventPattern('order.created')

@@ -24,7 +24,11 @@ You can run this service in two ways:
 Run the Product Service only:
 
 ```bash
-docker-compose up -d
+docker-compose up -f docker-compose.yml
+```
+Makesure you run this if you want to run other services, and uncomment the networks shared-net in compose
+```
+docker network create shared-net
 ```
 This will start the Product Service along with its dependencies (PostgreSQL, Redis, RabbitMQ).
 
