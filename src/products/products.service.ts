@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import Redis from 'ioredis';
-import { setUncaughtExceptionCaptureCallback } from 'process';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class ProductsService {
@@ -13,28 +13,37 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     @Inject('REDIS_CLIENT')
     private readonly redisClient: Redis,
+    @Inject('RABBITMQ_CLIENT')
+    private readonly clientProxy: ClientProxy,
   ) {}
 
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     const newProduct = this.productRepository.create(createProductDto);
-    return this.productRepository.save(newProduct);
+    const savedProduct = await this.productRepository.save(newProduct);
+
+    this.clientProxy.emit('product.created', savedProduct);
+    console.log(
+      `Event 'product.created' emiited for product ID: ${savedProduct.id}`,
+    );
+
+    return savedProduct;
   }
 
   async getProductById(id: string): Promise<Product | null> {
-    const productKey = `product:${id}`
+    const productKey = `product:${id}`;
     const cachedProduct = await this.redisClient.get(productKey);
 
     if (cachedProduct) {
-        console.log(`Cache HIT fot product ${id}`)
+      console.log(`Cache HIT fot product ${id}`);
 
-        return JSON.parse(cachedProduct)
+      return JSON.parse(cachedProduct);
     }
 
-    console.log(`No Cache for product ${id}`)
-    const product = await this.productRepository.findOneBy({ id })
+    console.log(`No Cache for product ${id}`);
+    const product = await this.productRepository.findOneBy({ id });
 
     if (product) {
-        await this.redisClient.setex(productKey, 600, JSON.stringify(product));
+      await this.redisClient.setex(productKey, 600, JSON.stringify(product));
     }
 
     return product;

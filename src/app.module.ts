@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from './redis/redis.module';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
 import * as dotenv from "dotenv";
 
 dotenv.config()
@@ -30,7 +31,8 @@ dotenv.config()
       inject: [ConfigService], 
     }),
     ProductsModule,
-    RedisModule
+    RedisModule,
+    RabbitMQModule
   ],
   controllers: [AppController],
   providers: [AppService],
