@@ -47,7 +47,8 @@ POST	/products	Create a new product
 GET	/products/:id	Get product details by ID
 Environment Variables
 
-## Development Notes
+## Architecture
+/explain here
 
 The service uses TypeORM migrations to manage schema changes.
 You can generate and run migrations with:
@@ -64,3 +65,10 @@ Events are published to RabbitMQ whenever a product is created, allowing other m
 Author
 
 Created by Dody Des – Software Engineer
+
+curl -X POST http://localhost:3000/products \
+-H "Content-Type: application/json" \
+-d '{"name": "Mechanical Keyboard", "price": 1200000, "qty": 100}'
+
+curl -X GET http://localhost:3000/products/:id \
+-H "Content-Type: application/json"  1200000, "qty": 100}'
