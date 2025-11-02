@@ -4,7 +4,7 @@ A showcase microservice project using NestJS.
 This service is responsible for handling product-related operations.  
 It provides APIs to create a product and get product details by ID, equipped with caching and event-driven communication.
 
-## Stacks
+## Technology Stack
 - NestJS
   - TypeORM
 - PostgreSQL
@@ -20,7 +20,10 @@ It provides APIs to create a product and get product details by ID, equipped wit
 
 You can run this service in two ways:
 
-### 1. Standalone Mode
+### 1. All services
+Visit the [runner repo](https://github.com/dodydestriady/ms-runner) to run all the services
+
+### 2. Standalone Mode
 Run the Product Service only:
 
 ```bash
@@ -30,16 +33,13 @@ Makesure you run this if you want to run other services, and uncomment the netwo
 ```
 docker network create shared-net
 ```
-This will start the Product Service along with its dependencies (PostgreSQL, Redis, RabbitMQ).
+This will start:
+- Product Service (port 3000)
+- PostgreSQL (internal port 5432)
+- Redis (internal port 6379)
+- RabbitMQ (ports 5672, 15672)
+- Database migrations will run automatically
 
-### 2. Integrated Mode
-
-If you want to run this as part of the full microservice showcase,
-visit the following repository:
-
-ms-application-runner
-
-The application runner will automatically start all related microservices, including Product Service.
 
 ## API Overview
 | Method |	Endpoint |	Description |
@@ -62,22 +62,6 @@ curl -X GET http://localhost:3000/products/1 \
 ```
 
 ## Architecture
-
-This service follows a modular clean architecture pattern.
-
-```
-src/
-├── products/
-│   ├── dto/          # Request/response validation
-│   ├── entities/     # TypeORM entities
-│   ├── interfaces/   # Business contracts
-│   ├── product.controller.ts
-│   ├── product.service.ts
-│   └── product.module.ts
-├── migrations/       # TypeORM migration files
-├── rabbitmq/         # Event publisher setup
-├── redis/            # Redis cache wrapper
-```
 - Controller Layer: Handles HTTP requests and routes.
 
 - Service Layer: Contains business logic and orchestrates cache, DB, and events.
@@ -88,11 +72,3 @@ src/
 
 - Caching: Product reads are cached in Redis and invalidated on updates.
 - The service uses TypeORM migrations to manage schema changes.
-
-Caching is implemented with Redis, and product data is automatically invalidated when changes occur.
-
-Events are published to RabbitMQ whenever a product is created, allowing other microservices to react.
-
-Author
-
-Created by Dody Des – Software Engineer
